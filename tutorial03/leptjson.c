@@ -172,7 +172,7 @@ static int lept_parse_string(lept_context *c, lept_value *v)
             }
             break;
         default:
-            if (ch < 0x20)
+            if ((unsigned char *)ch < 0x20)
                 return LEPT_PARSE_INVALID_STRING_CHAR;
             PUTC(c, ch);
         }
