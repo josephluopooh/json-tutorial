@@ -169,6 +169,8 @@ static int lept_parse_string(lept_context *c, lept_value *v)
             }
             break;
         default:
+            if (ch < 0x20 || ch == 0x22 || ch == 0x5c)
+                return LEPT_PARSE_INVALID_STRING_CHAR;
             PUTC(c, ch);
         }
     }
