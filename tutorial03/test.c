@@ -209,7 +209,9 @@ static void test_access_null()
 static void test_access_boolean()
 {
     lept_value v;
+#if 1
     lept_init(&v);
+#endif
     lept_set_string(&v, "", 0);
     lept_set_boolean(&v, true);
     EXPECT_TRUE(lept_get_boolean(&v));
