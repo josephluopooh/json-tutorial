@@ -246,6 +246,7 @@ void lept_set_boolean(lept_value *v, int b)
 {
     /* \TODO */
     assert(v != NULL);
+    lept_free(v);
     if (b == true)
         v->type = LEPT_TRUE;
     else if (b == false)
