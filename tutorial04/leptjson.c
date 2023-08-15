@@ -126,12 +126,13 @@ static const char *lept_parse_hex4(const char *p, unsigned *u)
     for (i = 0; i < 4; i++)
     {
         const char ch = *p++;
+        result <<= 4;
         if (ch >= '0' && ch <= '9')
-            result = result * 16 + ch - '0';
+            result |= ch - '0';
         else if (ch >= 'a' && ch <= 'f')
-            result = result * 16 + ch - 'a' + 10;
+            result |= ch - 'a' + 10;
         else if (ch >= 'A' && ch <= 'F')
-            result = result * 16 + ch - 'A' + 10;
+            result |= ch - 'A' + 10;
         else
             return NULL;
     }
