@@ -225,10 +225,10 @@ static int lept_parse_string(lept_context *c, lept_value *v)
                     if (*p++ != '\\' || *p++ != 'u')
                         STRING_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE);
                     else if (!(p = lept_parse_hex4(p, &low)))
-                        STRING_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE);
+                        STRING_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX);
                     else if (!(low >= 0xdc00 && low <= 0xdfff))
                         STRING_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE);
-                    u = 0x10000 + (u - 0xd800) * 0x400 + (low - 0xdc00);
+                    u = 0x10000 + (((u - 0xd800) << 10) | (low - 0xdc00));
                 }
                 lept_encode_utf8(c, u);
                 break;
