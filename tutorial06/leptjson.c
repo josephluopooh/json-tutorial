@@ -251,14 +251,9 @@ static int lept_parse_string_raw(lept_context *c, char **str, size_t *len)
 static int lept_parse_string(lept_context *c, lept_value *v)
 {
     int ret;
-    char *s;
-    size_t len;
     EXPECT(c, '\"');
-    if ((ret = lept_parse_string_raw(c, &s, &len)) == LEPT_PARSE_OK)
-    {
-        lept_set_string(v, s, len);
-        free(s);
-    }
+    if ((ret = lept_parse_string_raw(c, &v->u.s.s, &v->u.s.len)) == LEPT_PARSE_OK)
+        v->type = LEPT_STRING;
     return ret;
 }
 
@@ -386,8 +381,7 @@ static int lept_parse_object(lept_context *c, lept_value *v)
     for (i = 0; i < size; i++)
     {
         lept_member *m_ptr = (lept_member *)lept_context_pop(c, sizeof(lept_member));
-        if (m_ptr->k != NULL)
-            free(m_ptr->k);
+        free(m_ptr->k);
         lept_free(&m_ptr->v);
     }
     return ret;
