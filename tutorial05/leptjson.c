@@ -263,12 +263,29 @@ static int lept_parse_array(lept_context *c, lept_value *v)
     }
     for (;;)
     {
+#if 0
+        /* bug! dangling pointer problem */
+        lept_value *e = lept_context_push(c, sizeof(lept_value));
+        lept_init(e);
+        size++;
+        if ((ret = lept_parse_value(c, e)) != LEPT_PARSE_OK)
+        {
+            while (c->top > 0)
+                lept_free((lept_value *)lept_context_pop(c, sizeof(lept_value)));
+            return ret;
+        }
+#else
         lept_value e;
         lept_init(&e);
         if ((ret = lept_parse_value(c, &e)) != LEPT_PARSE_OK)
+        {
+            while (c->top > 0)
+                lept_free((lept_value *)lept_context_pop(c, sizeof(lept_value)));
             return ret;
+        }
         memcpy(lept_context_push(c, sizeof(lept_value)), &e, sizeof(lept_value));
         size++;
+#endif
         lept_parse_whitespace(c);
         if (*c->json == ',')
         {
@@ -285,7 +302,11 @@ static int lept_parse_array(lept_context *c, lept_value *v)
             return LEPT_PARSE_OK;
         }
         else
+        {
+            while (c->top > 0)
+                lept_free((lept_value *)lept_context_pop(c, sizeof(lept_value)));
             return LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET;
+        }
     }
 }
 
@@ -339,6 +360,14 @@ void lept_free(lept_value *v)
     assert(v != NULL);
     if (v->type == LEPT_STRING)
         free(v->u.s.s);
+    else if (v->type == LEPT_ARRAY)
+    {
+        size_t size = lept_get_array_size(v);
+        size_t i;
+        for (i = 0; i < size; i++)
+            lept_free(lept_get_array_element(v, i));
+        free(v->u.a.e);
+    }
     v->type = LEPT_NULL;
 }
 
