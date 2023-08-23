@@ -575,8 +575,7 @@ void lept_copy(lept_value *dst, const lept_value *src)
         dst->u.o.size = src->u.o.size;
         for (i = 0; i < src->u.o.size; i++)
         {
-            memcpy(dst->u.o.m[i].k = malloc(src->u.o.m[i].klen + 1), src->u.o.m[i].k, src->u.o.m[i].klen + 1);
-            dst->u.o.m[i].klen = src->u.o.m[i].klen;
+            memcpy(dst->u.o.m[i].k = malloc((dst->u.o.m[i].klen = src->u.o.m[i].klen) + 1), src->u.o.m[i].k, src->u.o.m[i].klen + 1);
             lept_init(&dst->u.o.m[i].v);
             lept_copy(&dst->u.o.m[i].v, &src->u.o.m[i].v);
         }
@@ -912,8 +911,7 @@ lept_value *lept_set_object_value(lept_value *v, const char *key, size_t klen)
     memcpy(v->u.o.m[v->u.o.size].k = malloc(klen + 1), key, klen + 1);
     v->u.o.m[v->u.o.size].klen = klen;
     lept_init(&v->u.o.m[v->u.o.size].v);
-    v->u.o.size += 1;
-    return &v->u.o.m[v->u.o.size - 1].v;
+    return &v->u.o.m[v->u.o.size++].v;
 }
 
 void lept_remove_object_value(lept_value *v, size_t index)
@@ -922,5 +920,5 @@ void lept_remove_object_value(lept_value *v, size_t index)
     lept_free(&v->u.o.m[index].v);
     free(v->u.o.m[index].k);
     memmove(&v->u.o.m[index], &v->u.o.m[index + 1], (v->u.o.size - index - 1) * sizeof(lept_member));
-    v->u.o.size -= 1;
+    v->u.o.size--;
 }
